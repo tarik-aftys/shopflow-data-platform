@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+
+# Airflow
+airflow.db
+airflow-webserver.pid
+logs/
+*.log
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+
+# Data files (keep structure, not actual data)
+data/raw/*.csv
+data/raw/*.xlsx
+data/processed/
+
+# Docker
+*.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# PostgreSQL
+*.sql.backup
+pgdata/
+oltp-data/
+wh-data/
+airflow-db-data/
+
+# Temporary files
+.temp/
+tmp/
+*.tmp
+
+# Documentation builds
+site/
+docs/_build/
+
+# OS
+Thumbs.db

@@ -1,0 +1,16 @@
+customer_id,first_name,last_name,email,phone,date_of_birth,gender
+1,Alice,Johnson,alice.johnson@email.com,+1-555-0101,1990-03-15,Female
+2,Bob,Smith,bob.smith@email.com,+1-555-0102,1985-07-22,Male
+3,Carol,Williams,carol.williams@email.com,+1-555-0103,1992-11-08,Female
+4,David,Brown,david.brown@email.com,+1-555-0104,1988-01-30,Male
+5,Emma,Davis,emma.davis@email.com,+1-555-0105,1995-06-12,Female
+6,Frank,Miller,frank.miller@email.com,+1-555-0106,1982-09-25,Male
+7,Grace,Wilson,grace.wilson@email.com,+1-555-0107,1993-04-18,Female
+8,Henry,Moore,henry.moore@email.com,+1-555-0108,1991-12-03,Male
+9,Ivy,Taylor,ivy.taylor@email.com,+1-555-0109,1987-08-14,Female
+10,Jack,Anderson,jack.anderson@email.com,+1-555-0110,1994-02-28,Male
+11,Karen,Thomas,karen.thomas@email.com,+1-555-0111,1989-05-20,Female
+12,Leo,Jackson,leo.jackson@email.com,+1-555-0112,1996-10-07,Male
+13,Mia,White,mia.white@email.com,+1-555-0113,1991-01-16,Female
+14,Noah,Harris,noah.harris@email.com,+1-555-0114,1986-07-09,Male
+15,Olivia,Martin,olivia.martin@email.com,+1-555-0115,1993-11-22,Female

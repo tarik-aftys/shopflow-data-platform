@@ -1,0 +1,135 @@
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    POSTGRES_HOST: postgres_wh
+    POSTGRES_USER: shopflow
+    POSTGRES_PASSWORD: shopflow_pass
+    POSTGRES_DB: shopflow_warehouse
+    WH_HOST: postgres_wh
+    WH_USER: shopflow
+    WH_PASSWORD: shopflow_pass
+    WH_DB: shopflow_warehouse
+    OLTP_HOST: postgres_oltp
+    POSTGRES_DB_OLTP: shopflow_oltp
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/scripts:/opt/airflow/scripts
+    - ./dbt:/opt/dbt
+    - ./data:/opt/airflow/data
+    - ./sql:/sql
+    - airflow-logs:/opt/airflow/logs
+  depends_on:
+    postgres_oltp:
+      condition: service_healthy
+    postgres_wh:
+      condition: service_healthy
+    airflow_db:
+      condition: service_healthy
+
+services:
+  postgres_oltp:
+    image: postgres:16-alpine
+    container_name: shopflow_oltp
+    environment:
+      POSTGRES_USER: shopflow
+      POSTGRES_PASSWORD: shopflow_pass
+      POSTGRES_DB: shopflow_oltp
+    ports:
+      - "5433:5432"
+    volumes:
+      - oltp-data:/var/lib/postgresql/data
+      - ./sql/oltp_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopflow -d shopflow_oltp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres_wh:
+    image: postgres:16-alpine
+    container_name: shopflow_warehouse
+    environment:
+      POSTGRES_USER: shopflow
+      POSTGRES_PASSWORD: shopflow_pass
+      POSTGRES_DB: shopflow_warehouse
+    ports:
+      - "5434:5432"
+    volumes:
+      - wh-data:/var/lib/postgresql/data
+      - ./sql/warehouse_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopflow -d shopflow_warehouse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow_db:
+    image: postgres:16-alpine
+    container_name: shopflow_airflow_db
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: shopflow_airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate &&
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@shopflow.local &&
+        echo "Airflow initialized successfully."
+    restart: "no"
+    depends_on:
+      airflow_db:
+        condition: service_healthy
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: shopflow_airflow_web
+    command: airflow webserver --port 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: shopflow_airflow_scheduler
+    command: airflow scheduler
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+volumes:
+  oltp-data:
+  wh-data:
+  airflow-db-data:
+  airflow-logs:

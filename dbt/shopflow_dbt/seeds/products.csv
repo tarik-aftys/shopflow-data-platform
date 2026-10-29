@@ -1,0 +1,16 @@
+product_id,product_name,sku,unit_price,cost_price,category_name,brand_name,is_active
+1,Smartphone X Pro,TECH-SP-001,999.99,650.00,Smartphones,TechNova,true
+2,Laptop UltraBook 15,TECH-LT-001,1299.99,850.00,Laptops,TechNova,true
+3,Wireless Noise-Cancel Headphones,TECH-HP-001,349.99,180.00,Headphones,ElectroPro,true
+4,Men's Classic Polo,CLO-MP-001,59.99,22.00,Men's Clothing,UrbanStyle,true
+5,Women's Running Jacket,CLO-WJ-001,89.99,35.00,Women's Clothing,FashionPlus,true
+6,Stainless Steel Cookware Set,HK-CW-001,199.99,95.00,Home & Kitchen,KitchenAid,true
+7,Yoga Mat Premium,SPT-YM-001,39.99,12.00,Sports & Outdoors,SportPeak,true
+8,Trail Running Shoes,SPT-RS-001,129.99,55.00,Sports & Outdoors,SportPeak,true
+9,Data Engineering Guide,BK-DE-001,49.99,15.00,Books,ReadWell,true
+10,Smart Watch Series 5,TECH-SW-001,279.99,140.00,Smartphones,TechNova,true
+11,Bluetooth Speaker,TECH-BS-001,79.99,35.00,Electronics,ElectroPro,true
+12,Men's Slim Fit Jeans,CLO-MJ-001,79.99,30.00,Men's Clothing,UrbanStyle,true
+13,Coffee Maker Deluxe,HK-CM-001,89.99,40.00,Home & Kitchen,KitchenAid,true
+14,Resistance Bands Set,SPT-RB-001,24.99,8.00,Sports & Outdoors,SportPeak,true
+15,Python Programming Book,BK-PY-001,44.99,12.00,Books,ReadWell,true

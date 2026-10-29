@@ -1,0 +1,162 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw layer containing Olist Brazilian E-Commerce dataset
+    database: shopflow_warehouse
+    schema: public
+    tables:
+      - name: raw_customers
+        description: Raw customer data from Olist
+        columns:
+          - name: customer_id
+            description: Unique customer ID
+            tests:
+              - unique
+              - not_null
+          - name: customer_unique_id
+            description: Unique customer identifier (can have multiple customer_ids)
+          - name: customer_zip_code_prefix
+            description: First 5 digits of customer zip code
+          - name: customer_city
+            description: Customer city name
+          - name: customer_state
+            description: Customer state (2-letter code)
+      
+      - name: raw_orders
+        description: Raw order data from Olist
+        columns:
+          - name: order_id
+            description: Unique order ID
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: Customer who placed the order
+          - name: order_status
+            description: Order status (delivered, shipped, canceled, etc.)
+          - name: order_purchase_timestamp
+            description: Order purchase timestamp
+          - name: order_approved_at
+            description: Order approval timestamp
+          - name: order_delivered_carrier_date
+            description: Date order was delivered to carrier
+          - name: order_delivered_customer_date
+            description: Date order was delivered to customer
+          - name: order_estimated_delivery_date
+            description: Estimated delivery date
+      
+      - name: raw_order_items
+        description: "Raw order items data from Olist (grain: order_id + order_item_id)"
+        columns:
+          - name: order_id
+            description: Order ID
+          - name: order_item_id
+            description: Sequential number identifying item within order
+          - name: product_id
+            description: Product ID
+          - name: seller_id
+            description: Seller ID
+          - name: shipping_limit_date
+            description: Shipping limit date for seller
+          - name: price
+            description: Item price
+          - name: freight_value
+            description: Item freight value
+      
+      - name: raw_order_payments
+        description: Raw payment data from Olist
+        columns:
+          - name: order_id
+            description: Order ID
+          - name: payment_sequential
+            description: Sequential number for multiple payments of same order
+          - name: payment_type
+            description: Payment method (credit_card, boleto, voucher, debit_card)
+          - name: payment_installments
+            description: Number of installments
+          - name: payment_value
+            description: Payment value
+      
+      - name: raw_products
+        description: Raw product data from Olist
+        columns:
+          - name: product_id
+            description: Unique product ID
+            tests:
+              - unique
+              - not_null
+          - name: product_category_name
+            description: Product category name (Portuguese)
+          - name: product_name_length
+            description: Length of product name
+          - name: product_description_length
+            description: Length of product description
+          - name: product_photos_qty
+            description: Number of product photos
+          - name: product_weight_g
+            description: Product weight in grams
+          - name: product_length_cm
+            description: Product length in cm
+          - name: product_height_cm
+            description: Product height in cm
+          - name: product_width_cm
+            description: Product width in cm
+      
+      - name: raw_sellers
+        description: Raw seller data from Olist
+        columns:
+          - name: seller_id
+            description: Unique seller ID
+            tests:
+              - unique
+              - not_null
+          - name: seller_zip_code_prefix
+            description: First 5 digits of seller zip code
+          - name: seller_city
+            description: Seller city name
+          - name: seller_state
+            description: Seller state (2-letter code)
+      
+      - name: raw_geolocation
+        description: Raw geolocation data from Olist (zip code to lat/lng)
+        columns:
+          - name: geolocation_zip_code_prefix
+            description: First 5 digits of zip code
+          - name: geolocation_lat
+            description: Latitude
+          - name: geolocation_lng
+            description: Longitude
+          - name: geolocation_city
+            description: City name
+          - name: geolocation_state
+            description: State (2-letter code)
+      
+      - name: raw_product_category_translation
+        description: Product category translations from Portuguese to English
+        columns:
+          - name: product_category_name
+            description: Category name in Portuguese
+            tests:
+              - unique
+              - not_null
+          - name: product_category_name_english
+            description: Category name in English
+      
+      - name: raw_order_reviews
+        description: Raw customer review data from Olist
+        columns:
+          - name: review_id
+            description: Unique review ID
+          - name: order_id
+            description: Order ID being reviewed
+          - name: review_score
+            description: Review score (1 to 5)
+          - name: review_comment_title
+            description: Review comment title
+          - name: review_comment_message
+            description: Review comment message
+          - name: review_creation_date
+            description: Review creation timestamp
+          - name: review_answer_timestamp
+            description: Review answer timestamp

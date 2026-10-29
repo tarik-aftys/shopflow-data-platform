@@ -1,0 +1,42 @@
+name: 'shopflow_dbt'
+version: '1.0.0'
+config-version: 2
+
+profile: 'shopflow'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  shopflow_dbt:
+    staging:
+      +schema: staging
+      +materialized: view
+      +docs:
+        node_color: lightblue
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+      +docs:
+        node_color: lightyellow
+    marts:
+      +schema: marts
+      +materialized: table
+      +docs:
+        node_color: lightgreen
+
+seeds:
+  shopflow_dbt:
+    +schema: seeds
+
+snapshots:
+  shopflow_dbt:
+    +target_schema: snapshots

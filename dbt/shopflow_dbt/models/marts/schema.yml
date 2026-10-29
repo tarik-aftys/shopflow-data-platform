@@ -1,0 +1,192 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Calendar date dimension with comprehensive date attributes
+    columns:
+      - name: date_key
+        description: Primary key (integer format YYYYMMDD)
+        tests:
+          - unique
+          - not_null
+      - name: date
+        description: Full date
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: Year (YYYY)
+        tests:
+          - not_null
+      - name: quarter
+        description: Quarter number (1-4)
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: month_number
+        description: Month number (1-12)
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: day_of_week
+        description: Day of week (1=Monday, 7=Sunday)
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7]
+
+  - name: dim_customer
+    description: Customer dimension with geographic and behavioral attributes
+    columns:
+      - name: customer_key
+        description: Surrogate key for customer dimension
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Business key from source system
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: Unique customer identifier across orders
+        tests:
+          - not_null
+      - name: state
+        description: Customer state (2-letter code)
+      - name: customer_segment
+        description: Customer segmentation based on order frequency
+        tests:
+          - accepted_values:
+              values: ['Repeat', 'Second-time', 'One-time', 'No orders']
+      - name: lifecycle_status
+        description: Customer lifecycle status
+        tests:
+          - accepted_values:
+              values: ['Active', 'At Risk', 'Churned', 'Inactive']
+
+  - name: dim_product
+    description: Product dimension with category and physical attributes
+    columns:
+      - name: product_key
+        description: Surrogate key for product dimension
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: Business key from source system
+        tests:
+          - unique
+          - not_null
+      - name: category_name
+        description: Product category in English
+        tests:
+          - not_null
+      - name: performance_tier
+        description: Product performance classification
+        tests:
+          - accepted_values:
+              values: ['Best Seller', 'Popular', 'Average', 'Slow Mover', 'Never Sold']
+      - name: photo_quality_tier
+        description: Photo quality classification
+        tests:
+          - accepted_values:
+              values: ['High', 'Medium', 'Low']
+      - name: description_quality
+        description: Description quality classification
+        tests:
+          - accepted_values:
+              values: ['Detailed', 'Standard', 'Brief']
+
+  - name: dim_seller
+    description: Seller dimension with geographic and performance attributes
+    columns:
+      - name: seller_key
+        description: Surrogate key for seller dimension
+        tests:
+          - unique
+          - not_null
+      - name: seller_id
+        description: Business key from source system
+        tests:
+          - unique
+          - not_null
+      - name: state
+        description: Seller state (2-letter code)
+      - name: seller_tier
+        description: Seller classification based on volume
+        tests:
+          - accepted_values:
+              values: ['Enterprise', 'Professional', 'Growing', 'Small', 'Inactive']
+
+  - name: fact_sales
+    description: Sales fact table at order item grain
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - order_item_id
+    columns:
+      - name: sales_key
+        description: Surrogate key for sales fact
+        tests:
+          - unique
+          - not_null
+      - name: date_key
+        description: Foreign key to dim_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: customer_key
+        description: Foreign key to dim_customer
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_key
+      - name: product_key
+        description: Foreign key to dim_product
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_key
+      - name: seller_key
+        description: Foreign key to dim_seller
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_seller')
+              field: seller_key
+      - name: order_id
+        description: Degenerate dimension - order identifier
+        tests:
+          - not_null
+      - name: order_item_id
+        description: Degenerate dimension - item sequence within order
+        tests:
+          - not_null
+      - name: item_price
+        description: Item price in BRL
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: freight_value
+        description: Freight cost in BRL
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: total_price
+        description: Total price (item + freight)
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: order_status
+        description: Order status
+        tests:
+          - accepted_values:
+              values: ['delivered', 'shipped', 'canceled', 'unavailable', 'invoiced', 'processing', 'created', 'approved']
